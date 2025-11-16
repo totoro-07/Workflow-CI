@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 jobs:
-  retrain:
+  mlflow_ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,19 +29,8 @@ jobs:
       - name: Run MLflow project
         working-directory: Workflow-CI/MLProject
         run: |
-          echo "🚀 Starting MLflow training..."
-          if mlflow run . --env-manager=local; then
-            echo "::notice title=MLflow::Training completed successfully!"
-            echo "### 🎉 MLflow Training Status" >> $GITHUB_STEP_SUMMARY
-            echo "- Status: **Success**" >> $GITHUB_STEP_SUMMARY
-            echo "- Timestamp: $(date)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "::error title=MLflow::Training failed!"
-            echo "### ❌ MLflow Training FAILED" >> $GITHUB_STEP_SUMMARY
-            echo "- Status: **FAILED**" >> $GITHUB_STEP_SUMMARY
-            echo "- Check logs for details." >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
+          echo "🚀 Running MLflow project..."
+          mlflow run . --env-manager=local
 
       - name: Save mlruns artifacts
         run: |
