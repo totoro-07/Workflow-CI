@@ -1,6 +1,7 @@
 name: MLflow CI Workflow
 
 on:
+  workflow_dispatch:
   workflow_call:
 
 permissions:
@@ -21,21 +22,32 @@ jobs:
 
       - name: Install dependencies
         run: |
-          echo "Installing dependencies..."
+          echo "📦 Installing dependencies..."
           python -m pip install --upgrade pip
           pip install mlflow scikit-learn pandas docker
 
       - name: Run MLflow project
         working-directory: Workflow-CI/MLProject
         run: |
-          echo "Running MLflow project..."
-          mlflow run . --env-manager=local
+          echo "🚀 Starting MLflow training..."
+          if mlflow run . --env-manager=local; then
+            echo "::notice title=MLflow::Training completed successfully!"
+            echo "### 🎉 MLflow Training Status" >> $GITHUB_STEP_SUMMARY
+            echo "- Status: **Success**" >> $GITHUB_STEP_SUMMARY
+            echo "- Timestamp: $(date)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "::error title=MLflow::Training failed!"
+            echo "### ❌ MLflow Training FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "- Status: **FAILED**" >> $GITHUB_STEP_SUMMARY
+            echo "- Check logs for details." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
 
       - name: Save mlruns artifacts
         run: |
-          echo "Saving mlruns artifacts..."
+          echo "💾 Saving MLflow artifacts..."
           mkdir -p artifacts
-          cp -r Workflow-CI/MLProject/mlruns artifacts/
+          cp -r Workflow-CI/MLProject/mlruns artifacts/ || echo "⚠️ No mlruns directory found."
 
       - name: Upload artifact to GitHub
         uses: actions/upload-artifact@v4
