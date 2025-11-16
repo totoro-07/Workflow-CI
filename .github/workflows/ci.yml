@@ -27,7 +27,7 @@ jobs:
           pip install mlflow scikit-learn pandas docker
 
       - name: Run MLflow project
-        working-directory: Workflow-CI/MLProject
+        working-directory: MLProject
         run: |
           echo "🚀 Running MLflow project..."
           mlflow run . --env-manager=local
@@ -36,7 +36,7 @@ jobs:
         run: |
           echo "💾 Saving MLflow artifacts..."
           mkdir -p artifacts
-          cp -r Workflow-CI/MLProject/mlruns artifacts/ || echo "⚠️ No mlruns directory found."
+          cp -r MLProject/mlruns artifacts/ || echo "⚠️ No mlruns directory found."
 
       - name: Upload artifact to GitHub
         uses: actions/upload-artifact@v4
